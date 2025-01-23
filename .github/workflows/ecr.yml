@@ -22,8 +22,8 @@ permissions:
   actions: read  # Ler informações sobre as ações
   contents: write  # Modificar o conteúdo do repositório
   security-events: write  # Gravar eventos de segurança
-  id-token: write  # Acesso ao token de identidade
-  secrets: write  # Modificar variáveis secretas
+  #id-token: write  # Acesso ao token de identidade
+  #secrets: write  # Modificar variáveis secretas
   packages: write  # Modificar pacotes (GitHub Packages, por exemplo)
   deployments: write  # Gerenciar implantações
   scopes: read  # Acesso a escopos específicos
