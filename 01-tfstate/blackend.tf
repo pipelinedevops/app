@@ -12,6 +12,16 @@ terraform {
 }
 */
 
+terraform {
+  backend "s3" {
+    bucket = "" 
+    key    = ""
+    region = ""
+    profile= ""
+  }
+}
+
+
 /*
 terraform {
  backend "s3" {
