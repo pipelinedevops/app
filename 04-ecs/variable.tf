@@ -10,7 +10,7 @@ variable "reponame" {
    #default  =  "labchallenge"
  }
 
- variable "image_tag " {
+ variable "imagetag " {
    type = string
    description = "Nome tag"
    #default  =  "labchallenge"
