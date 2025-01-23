@@ -1,0 +1,92 @@
+name: Development|CD Cloudtrail
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Escolha a ação: apply ou destroy'
+        required: true
+        default: 'apply'
+  
+env:
+  GRAFENO_AWS_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stage') && 'us-east-1' || 'sa-east-1' }}
+  DISABLE_SLACK_NOTIFY: true
+  SLACK_CHANNEL: deploys-development
+  SLACK_USERNAME: terraform - glue
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  SLACK_ICON_EMOJI: ':grafenologo:'
+  TERRAFORM_INIT_FILE: dev-backend.conf  
+  working: "infrastructure/dev/cloudtrail"
+
+jobs:
+  terraform:
+    name: "Terraform Deploy Cloudtrail"
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stage' && secrets.AWS_ACCESS_KEY_STG) || secrets.AWS_ACCESS_KEY_PRD }}
+      AWS_SECRET_ACCESS_KEY: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_SECRET_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stage' && secrets.AWS_SECRET_ACCESS_KEY_STG) || secrets.AWS_SECRET_ACCESS_KEY_PRD }}      
+      ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stage') && 'environments/stg.tfvars' || 'environments/prd.tfvars' }}
+      BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'backend-dev.tf' || (github.ref == 'refs/heads/stage') && 'backend-stg.tf' || 'backend-prd.tf' }}   
+      AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stage') && 'us-east-1' || 'sa-east-1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Slack | Notify
+        if: ${{ always() && env.DISABLE_SLACK_NOTIFY != 'true' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_MESSAGE: 'Iniciando deploy :arrow_forward:'
+
+      - name: Configure AWS CLI
+        run: |
+          mkdir -p ~/.aws
+          echo "[default]" > ~/.aws/config
+          echo "region = ${AWS_DEFAULT_REGION}" >> ~/.aws/config
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
+        shell: /usr/bin/bash -e {0}
+
+      - name: Select and Setup Backend Configuration
+        run: |
+          # Copy the appropriate backend configuration based on the branch
+          cp "${{ env.working }}/backend-${{ github.ref_name == 'development' && 'dev' || github.ref_name == 'stage' && 'stg' || 'master' && 'prd' }}.tf" "${{ env.working }}/backend.tf"
+          # Remove any existing backend configurations to prevent conflicts
+          find ${{ env.working }} -name 'backend-*.tf' -delete        
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        run: |
+          npm install -g @terraform-visual/cli
+          terraform init -no-color -lock=false
+          terraform providers
+        working-directory: ${{ env.working }}
+
+      - name: Terraform plan
+        run: |
+          terraform plan -no-color -lock=false -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
+          ##terraform plan -no-color -lock=false -out=plan.out 
+        working-directory: ${{ env.working }}
+
+      - name: Terraform apply
+        if: ${{ github.event.inputs.action == 'apply' }}
+        run: terraform apply -auto-approve -lock=false -var-file="${{ env.ENVIRONMENT_TFVARS }}"
+        working-directory: ${{ env.working }}
+
+      - name: Terraform destroy
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: terraform destroy -auto-approve -parallelism=10 -lock=false -var-file="${{ env.ENVIRONMENT_TFVARS }}"
+        working-directory: ${{ env.working }}
+
+      - name: Slack | Notify
+        if: ${{ always() && steps.terraform.outcome == 'success' && env.DISABLE_SLACK_NOTIFY != 'true' }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: 'good'
+          SLACK_MESSAGE: 'Deploy concluído com sucesso! :white_check_mark:'
+          SLACK_TITLE: "Terraform - Data IAC"

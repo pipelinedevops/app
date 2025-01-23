@@ -6,12 +6,14 @@ on:
     branches: [ "main" ]
     
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
-  AWS_REGION: us-east-1
-  directory-state: 01-tfstate
-  directory-repo: 02-repo                  
-  directory-app: 03-image/app
+  AWS_ACCESS_KEY_ID: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stg' && secrets.AWS_ACCESS_KEY_STG) || secrets.TF_AWS_LAB_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_SECRET_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stg' && secrets.AWS_SECRET_ACCESS_KEY_STG) || secrets.TF_AWS_LAB_KEY }} 
+  #AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
+  #AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
+  #AWS_REGION: us-east-1
+  directory-01: 01-tfstate
+  directory-02: 02-repo                  
+  directory-03: 03-image/app
   repo_name: lab_challenge
   image_name: app
   tag_name: v0.1
@@ -40,6 +42,10 @@ jobs:
   deploystate:
       name: 01-state
       runs-on: ubuntu-latest
+      env:
+        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || 'environments/prd-01.tfvars' }} #editar o caminho conforme necessário
+        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || 'environments/backend-prd-01.tf' }}  #editar o caminho conforme necessário
+        AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }} 
       needs: configpipeline
       environment: production
       steps:
@@ -52,15 +58,19 @@ jobs:
         - name: deploy state
           run: |      
            terraform init -reconfigure
-           terraform plan -lock=false
-           terraform apply -auto-approve -lock=false
+           terraform plan -lock=false  -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
+           terraform apply -auto-approve -lock=false -parallelism=10 -var-file="${{ env.ENVIRONMENT_TFVARS }}"
 
-          working-directory:  ${{ env.directory-state }}   
+          working-directory:  ${{ env.directory-01 }}   
 
               
   deployrepo:
      name: 02-repo
      runs-on: ubuntu-latest
+     env:
+        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || 'environments/prd-02.tfvars' }} ##editar o caminho conforme necessário
+        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || 'environments/backend-prd-02.tf' }} #editar o caminho conforme necessário
+        AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }}
      needs: deploystate
      environment: production
      steps:
@@ -73,10 +83,10 @@ jobs:
        - name: deployrepo
          run: |      
           terraform init -reconfigure
-          terraform plan -lock=false
-          terraform apply -auto-approve -lock=false
+          terraform plan -lock=false -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
+          terraform apply -auto-approve -lock=false -parallelism=10  -var-file="${{ env.ENVIRONMENT_TFVARS }}"
 
-         working-directory:  ${{ env.directory-repo }}  
+         working-directory:  ${{ env.directory-02 }}  
 
   deployimage:
      name: 03-image
@@ -102,5 +112,5 @@ jobs:
              aws ecr describe-images --repository-name ${{ env.repo_name }}
                  
          shell: /usr/bin/bash -e {0}
-         working-directory:  ${{ env.directory-app}}  
+         working-directory:  ${{ env.directory-03}}  
      

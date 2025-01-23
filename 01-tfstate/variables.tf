@@ -1,20 +1,25 @@
-
-
 #nome do bucket a ser criado 
 variable "bucketprefix" {
   type = string
-  default  = "labchallenge-pipeline-state"
+  #default  = "labchallenge-pipeline-state"
 }
 
 #usar em caso de não for possivel usar o data
 #valor usado para policy do s3 pode ser obtido pelo aws cli aws organizations list-roots
 variable "orgid" {
   type = string
-  default  = "o-0ul8usqby7"
+  #default  = "o-0ul8usqby7"
 }
 
 
 #tags para serem usadas no module
+ variable "tags" {
+  type        = map(any)
+  description = "tags"
+}
+
+#tags para serem usadas no module
+/*
 locals {     
   
    tags = {
@@ -25,11 +30,4 @@ locals {
   }
 
   }
-
-##################################
-##################################
-#variable "tags" {
-#    type = string
-#    description = "tags"
-
-# }
+*/
