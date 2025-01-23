@@ -48,7 +48,7 @@ jobs:
         - name: SetupTerraform
           uses: hashicorp/setup-terraform@v3  
 
-        - name: deployimage
+        - name: deploy state
           run: |      
            terraform init -reconfigure
            terraform plan -lock=false
@@ -68,8 +68,11 @@ jobs:
        - name: SetupTerraform
          uses: hashicorp/setup-terraform@v3  
 
-       - name: deployimage
-         run: | 
+       - name: deployrepo
+         run: |      
+          terraform init -reconfigure
+          terraform plan -lock=false
+          terraform apply -auto-approve -lock=false
 
          working-directory:  ${{ env.directory-repo }}  
 
