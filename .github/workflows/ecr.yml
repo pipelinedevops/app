@@ -38,7 +38,7 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
 
   deploystate:
-      name: deploy repo
+      name: 01-state
       runs-on: ubuntu-latest
       environment: production
       steps:
@@ -58,7 +58,7 @@ jobs:
 
               
   deployrepo:
-     name: deploy repo
+     name: 02-repo
      runs-on: ubuntu-latest
      environment: production
      steps:
@@ -67,14 +67,14 @@ jobs:
        
        - name: SetupTerraform
          uses: hashicorp/setup-terraform@v3  
-         
+
        - name: deployimage
          run: | 
 
          working-directory:  ${{ env.directory-repo }}  
 
   deployimage:
-     name: deploy image
+     name: 03-image
      runs-on: ubuntu-latest
      environment: production
      steps:
