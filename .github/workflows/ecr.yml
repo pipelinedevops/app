@@ -90,5 +90,5 @@ jobs:
 
            aws ecr describe-images --repository-name ${{ env.repo_name }}
             
-          shell: /usr/bin/bash -e {0}
-          working-directory:  ${{ env.directory}}  
+         shell: /usr/bin/bash -e {0}
+         working-directory:  ${{ env.directory}}  
