@@ -30,8 +30,8 @@ permissions:
   checks: write  # Criar verificações
   issues: write  # Modificar problemas
   pull-requests: write  # Modificar solicitações de pull
-  repositories: write  # Gerenciar repositórios
-  administration: write  # Administração do repositório
+  #repositories: write  # Gerenciar repositórios
+  #administration: write  # Administração do repositório
 
 jobs:
   configpipeline:
