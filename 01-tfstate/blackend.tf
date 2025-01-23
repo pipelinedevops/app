@@ -14,12 +14,6 @@ terraform {
 
 terraform {
  backend "s3" {
-    bucket         = ""
-    key            = ""
-    region         = ""
-    encrypt        = true
-    kms_key_id     = ""
-    dynamodb_table = ""
  }
 }
 
