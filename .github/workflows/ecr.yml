@@ -8,10 +8,10 @@ on:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
-  AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
-  reponame: app_ecs           # set this to the name of the container in the
+  AWS_REGION: us-east-1                  
+  directory: app
   image_name: app
-  tag_name: version:0.1
+  tag_name: v0.1
 
 
 permissions:
@@ -52,13 +52,13 @@ jobs:
 
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
-            docker build -t ${{env.image_name}:${{env.tag_name}}
+            docker build -t ${{env.image_name}}:${{env.tag_name}}
 
-            docker tag ${{env.image_name}:${{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
+            docker tag ${{env.image_name}}:{{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
 
             docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
 
             aws ecr describe-images --repository-name  ${{ env.repo_name }}
             
           shell: /usr/bin/bash -e {0}
-      
+          working-directory:  ${{ env.directory}}  
