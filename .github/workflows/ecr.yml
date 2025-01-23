@@ -18,9 +18,7 @@ env:
   image_name: app
   tag_name: v0.1
 
-
 permissions:
-  permissions:
     actions: read  # Ler informações sobre as ações
     contents: write  # Modificar o conteúdo do repositório
     security-events: write  # Gravar eventos de segurança
