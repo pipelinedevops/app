@@ -1,6 +1,6 @@
 FROM node:22-alpine
 COPY . /app
-WORKDIR /app
+WORKDIR /app/src
 EXPOSE 8080
 RUN apk add curl
 RUN npm install express
