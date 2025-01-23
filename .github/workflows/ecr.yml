@@ -136,7 +136,7 @@ jobs:
          working-directory:  ${{ env.directory-03}}  
     
   deployecs:
-     name: 02-repo
+     name: 04-ecs
      runs-on: ubuntu-latest
      needs: deployimage
      env:
