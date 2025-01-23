@@ -112,8 +112,6 @@ jobs:
                      
              aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
-                 
-         shell: /usr/bin/bash -e {0}
          working-directory:  ${{ env.directory-03}}  
       
        - name: ecr build
