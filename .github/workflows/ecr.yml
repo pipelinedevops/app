@@ -120,7 +120,7 @@ jobs:
          run: |
              docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory-03-repo}}
      
-             docker tag ${{env.image_name}}:{{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
+             docker tag ${{env.image_name}}:${{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
      
              docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
      
