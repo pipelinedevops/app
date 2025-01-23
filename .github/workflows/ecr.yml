@@ -112,9 +112,9 @@ jobs:
                      
              aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
-             docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory}}
+             docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory-03}}
 
-             #docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory}}
+             #docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory-03}}
      
              docker tag ${{env.image_name}}:{{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
      
