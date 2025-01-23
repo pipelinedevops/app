@@ -12,8 +12,6 @@ env:
   #AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
   AWS_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }} #us-east-1
   #01
-  vars01: ../environments/prd-01.tfvars
-  blackend01: ../environments/blackend-prd-01.tfvars
   directory-01: 01-tfstate
   #02
   directory-02: 02-repo                  
@@ -54,8 +52,8 @@ jobs:
       name: 01-state
       runs-on: ubuntu-latest
       env:
-        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' ||  env.vars01  }} #editar o caminho conforme necessário
-        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || env.blackend01 }}  #editar o caminho conforme necessário
+        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' ||  '../environments/prd-01.tfvars'  }} #editar o caminho conforme necessário
+        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || '../environments/blackend-prd-01.tfvars' }}  #editar o caminho conforme necessário
         AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }} 
       needs: configpipeline
       environment: production
