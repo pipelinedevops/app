@@ -8,8 +8,10 @@ on:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
-  AWS_REGION: us-east-1                  
-  directory: image/app
+  AWS_REGION: us-east-1
+  directory: 01-tfstate
+  directory-repo: 02-repo                  
+  directory: 03-image/app
   repo_name: lab_challenge
   image_name: app
   tag_name: v0.1
@@ -34,7 +36,34 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
+
+    deploystate:
+       name: deploy state
+       runs-on: ubuntu-latest
+       environment: production
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4 
         
+         - name: deployimage
+           run: |      
+            terraform init -reconfigure
+            terraform plan -lock=false
+            terraform apply -auto-approve -lock=false
+
+              
+    deployrepo:
+       name: deploy repo
+       runs-on: ubuntu-latest
+       environment: production
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4 
+        
+         - name: deployimage
+           run: | 
+
+
   deployimage:
       name: deploy image
       runs-on: ubuntu-latest
@@ -43,13 +72,13 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4 
   
-        - name: Configure AWS CLI
+        - name: deployimage
           run: |
             export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
             
-            #aws ecr delete-repository --repository-name ${{ env.repo_name }} --force
+           # aws ecr delete-repository --repository-name ${{ env.repo_name }} --force
             
-            aws ecr create-repository --repository-name ${{ env.repo_name }}
+          #  aws ecr create-repository --repository-name ${{ env.repo_name }}
 
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
