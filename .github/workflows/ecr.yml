@@ -64,9 +64,9 @@ jobs:
 
         - name: deploy state
           run: |      
-           terraform init -reconfigure
            ls -la
            ls ../
+           terraform init -reconfigure  -var-file="${{ env.ENVIRONMENT_TFVARS }}" -backend-config="${{ env.BACKEND_CONFIG }}"
            terraform plan -lock=false  -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
            terraform apply -auto-approve -lock=false -parallelism=10 -var-file="${{ env.ENVIRONMENT_TFVARS }}"
 
@@ -91,7 +91,7 @@ jobs:
 
        - name: deployrepo
          run: |      
-          terraform init -reconfigure
+          terraform init -reconfigure -var-file="${{ env.ENVIRONMENT_TFVARS }}" -backend-config="${{ env.BACKEND_CONFIG }}"
           terraform plan -lock=false -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
           terraform apply -auto-approve -lock=false -parallelism=10  -var-file="${{ env.ENVIRONMENT_TFVARS }}"
 
