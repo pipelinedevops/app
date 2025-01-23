@@ -10,7 +10,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_SECRET_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stg' && secrets.AWS_SECRET_ACCESS_KEY_STG) || secrets.TF_AWS_LAB_KEY }} 
   #AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
   #AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
-  #AWS_REGION: us-east-1
+  AWS_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }} #us-east-1
   directory-01: 01-tfstate
   directory-02: 02-repo                  
   directory-03: 03-image/app
