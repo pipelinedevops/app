@@ -1,0 +1,64 @@
+
+name: Deploy to Amazon ECR image
+
+on:
+  push:
+    branches: [ "main" ]
+    
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
+  AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
+  reponame: app_ecs           # set this to the name of the container in the
+  image_name: app
+  tag_name: version:0.1
+
+
+permissions:
+  contents: read
+
+jobs:
+  configpipeline:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+  deployimage:
+      name: deploy image
+      runs-on: ubuntu-latest
+      environment: production
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4 
+  
+        - name: Configure AWS CLI
+          run: |
+            export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+            
+            aws ecr delete-repository --repository-name ${{ env.repo_name }} --force
+            
+            aws ecr create-repository --repository-name ${{ env.repo_name }}
+
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+            docker build -t ${{env.image_name}:${{env.tag_name}}
+
+            docker tag ${{env.image_name}:${{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
+
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
+
+            aws ecr describe-images --repository-name  ${{ env.repo_name }}
+            
+          shell: /usr/bin/bash -e {0}
+      
