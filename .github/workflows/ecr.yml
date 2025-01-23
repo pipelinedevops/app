@@ -65,6 +65,7 @@ jobs:
         - name: deploy state
           run: |      
            terraform init -reconfigure
+           ls -la
            terraform plan -lock=false  -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
            terraform apply -auto-approve -lock=false -parallelism=10 -var-file="${{ env.ENVIRONMENT_TFVARS }}"
 
