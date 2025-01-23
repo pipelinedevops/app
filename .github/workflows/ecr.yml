@@ -106,12 +106,18 @@ jobs:
        - name: Checkout
          uses: actions/checkout@v4 
      
-       - name: deployimage
+       - name: ecr login
          run: |
              export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
                      
              aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
+                 
+         shell: /usr/bin/bash -e {0}
+         working-directory:  ${{ env.directory-03}}  
+      
+       - name: ecr build
+         run: |
              ls -la
 
              ls -la ../03-image/
@@ -126,4 +132,5 @@ jobs:
                  
          shell: /usr/bin/bash -e {0}
          working-directory:  ${{ env.directory-03}}  
+        
      
