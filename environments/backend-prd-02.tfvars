@@ -1,17 +1,4 @@
 
-provider "aws" {
-  region  = "us-east-1"
-}
-
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.58.0"
-    }
-  }
-}
-
     bucket         = "labchallenge-pipeline-state"
     key            = "ecrrepo/s3_kms_dynamodb.tfstate"
     region         = "us-east-1"
