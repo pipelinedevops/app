@@ -43,8 +43,8 @@ jobs:
       name: 01-state
       runs-on: ubuntu-latest
       env:
-        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || 'environments/prd-01.tfvars' }} #editar o caminho conforme necessário
-        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || 'environments/backend-prd-01.tf' }}  #editar o caminho conforme necessário
+        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || '/environments/prd-01.tfvars' }} #editar o caminho conforme necessário
+        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || '/environments/backend-prd-01.tf' }}  #editar o caminho conforme necessário
         AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }} 
       needs: configpipeline
       environment: production
