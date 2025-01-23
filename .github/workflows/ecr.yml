@@ -9,9 +9,9 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
   AWS_REGION: us-east-1
-  directory: 01-tfstate
+  directory-state: 01-tfstate
   directory-repo: 02-repo                  
-  directory: 03-image/app
+  directory-app: 03-image/app
   repo_name: lab_challenge
   image_name: app
   tag_name: v0.1
@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   configpipeline:
-    name: Deploy
+    name: configpipe
     runs-on: ubuntu-latest
     environment: production
 
@@ -38,7 +38,7 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
 
   deploystate:
-      name: deploy state
+      name: deploy repo
       runs-on: ubuntu-latest
       environment: production
       steps:
@@ -50,6 +50,8 @@ jobs:
            terraform init -reconfigure
            terraform plan -lock=false
            terraform apply -auto-approve -lock=false
+
+          working-directory:  ${{ env.directory-state }}   
 
               
   deployrepo:
@@ -63,6 +65,7 @@ jobs:
        - name: deployimage
          run: | 
 
+         working-directory:  ${{ env.directory-repo }}  
 
   deployimage:
      name: deploy image
@@ -87,5 +90,5 @@ jobs:
              aws ecr describe-images --repository-name ${{ env.repo_name }}
                  
          shell: /usr/bin/bash -e {0}
-         working-directory:  ${{ env.directory}}  
+         working-directory:  ${{ env.directory-app}}  
      
