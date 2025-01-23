@@ -66,9 +66,9 @@ jobs:
           run: |      
            ls -la
            ls ../
-           terraform init -reconfigure -backend-config="${{ env.BACKEND_CONFIG }}"
-           terraform plan -lock=false  -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
-           terraform apply -auto-approve -lock=false -parallelism=10 -var-file="${{ env.ENVIRONMENT_TFVARS }}"
+           terraform init -reconfigure 
+           terraform plan -lock=false  -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}" -backend-config="${{ env.BACKEND_CONFIG }}"
+           terraform apply -auto-approve -lock=false -parallelism=10 -var-file="${{ env.ENVIRONMENT_TFVARS }}" -backend-config="${{ env.BACKEND_CONFIG }}"
 
           working-directory:  ${{ env.directory-01 }}   
 
