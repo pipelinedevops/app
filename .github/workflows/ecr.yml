@@ -15,7 +15,7 @@ env:
   directory-01: 01-tfstate
   #02
   directory-02: 02-repo                  
-  directory-03: 03-image/app
+  directory-03: ../03-image/
   repo_name: labchallenge
   image_name: app
   tag_name: v0.1
