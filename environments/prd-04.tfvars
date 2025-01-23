@@ -4,7 +4,10 @@ cluster_name =  "lab-ecs"
 
 reponame = "labchallenge"
 
-image_tag = "v0.2"
+imagetag = "v0.2"
+
+ecs_servicename = "ecs_app"
+
 
 #tags
 

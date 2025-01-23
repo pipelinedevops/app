@@ -3,9 +3,15 @@
 resource "aws_ecs_cluster" "example" {
   name = var.cluster_name #"example-ecs-cluster"
 
-   configuration {
-    managed_storage_configuration {
-      fargate_ephemeral_storage_kms_key_id = aws_kms_key.example.id
+  configuration {
+    execute_command_configuration {
+      kms_key_id = aws_kms_key.example.arn
+      logging    = "OVERRIDE"
+
+      log_configuration {
+        cloud_watch_encryption_enabled = true
+        cloud_watch_log_group_name     = aws_cloudwatch_log_group.example.name
+      }
     }
   }
 
@@ -19,7 +25,7 @@ resource "aws_ecs_cluster" "example" {
 
 # Criar um serviço ECS
 resource "aws_ecs_service" "example" {
-  name            = "example-service"
+  name            = var.ecs_servicename #"example-service"
   cluster         = aws_ecs_cluster.example.id
   task_definition = aws_ecs_task_definition.example.arn
   desired_count   = 1

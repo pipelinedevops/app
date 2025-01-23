@@ -4,16 +4,23 @@ variable "cluster_name" {
    #default  =  "labchallenge"
  }
 
+variable "ecs_servicename" {
+   type = string
+   description = "Nome do cluster"
+   #default  =  "labchallenge"
+ }
+
+
 variable "reponame" {
    type = string
    description = "Nome do repositório"
    #default  =  "labchallenge"
  }
 
- variable "imagetag " {
+ variable "imagetag" {
    type = string
    description = "Nome tag"
-   #default  =  "labchallenge"
+   #default  = "v" #"labchallenge"
  }
 
  variable "tags" {
