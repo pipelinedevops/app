@@ -47,7 +47,7 @@ jobs:
           run: |
             export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
             
-            aws ecr delete-repository --repository-name ${{ env.repo_name }} --force
+            #aws ecr delete-repository --repository-name ${{ env.repo_name }} --force
             
             aws ecr create-repository --repository-name ${{ env.repo_name }}
 
