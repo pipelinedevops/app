@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   configpipeline:
-    name: configpipe
+    name: config pipeline
     runs-on: ubuntu-latest
     environment: production
 
@@ -45,6 +45,9 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4 
         
+        - name: SetupTerraform
+          uses: hashicorp/setup-terraform@v3  
+
         - name: deployimage
           run: |      
            terraform init -reconfigure
@@ -62,6 +65,9 @@ jobs:
        - name: Checkout
          uses: actions/checkout@v4 
        
+       - name: SetupTerraform
+         uses: hashicorp/setup-terraform@v3  
+         
        - name: deployimage
          run: | 
 
