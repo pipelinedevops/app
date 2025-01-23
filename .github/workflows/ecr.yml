@@ -14,8 +14,10 @@ env:
   #01
   directory-01: 01-tfstate
   #02
-  directory-02: 02-repo                  
-  directory-03: ../03-image/
+  directory-02: 02-repo
+  #03                  
+  directory-03-repo: ../03-image/
+  directory-03: 03-image
   repo_name: labchallenge
   image_name: app
   tag_name: v0.1
@@ -33,7 +35,7 @@ permissions:
 
 jobs:
   configpipeline:
-    name: config pipeline
+    name: 00-config pipeline
     runs-on: ubuntu-latest
     environment: production
 
@@ -120,7 +122,7 @@ jobs:
 
              ls -la ../03-image/
 
-             docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory-03}}
+             docker build -t ${{env.image_name}}:${{env.tag_name}}  ${{ env.directory-03-repo}}
      
              docker tag ${{env.image_name}}:{{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
      
