@@ -9,7 +9,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.TF_AWS_LAB_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_AWS_LAB_KEY }}
   AWS_REGION: us-east-1                  
-  directory: app
+  directory: image/app
   image_name: app
   tag_name: v0.1
 
