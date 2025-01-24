@@ -16,7 +16,6 @@ resource "aws_ecs_cluster" "example" {
   }
 
   tags = var.tags
-
     depends_on = [
     aws_kms_key_policy.example
   ]
@@ -32,9 +31,13 @@ resource "aws_ecs_service" "example" {
   launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
 
   network_configuration {
-    subnets         = ["subnet-12345678", "subnet-87654321"] # IDs das sub-redes existentes
-    security_groups = ["sg-12345678"]                       # ID do grupo de segurança existente
+    subnets         = ["${data.aws_subnets.endpoint-us-east-1a.ids[0]}", "${data.aws_subnets.endpoint-us-east-1b.ids[0]}", "${data.aws_subnets.endpoint-us-east-1c.ids[0]}"] # IDs das sub-redes existentes
+    security_groups = [
+      aws_security_group.vpc_acesso,
+      aws_security_group.acesso_service
+    ]                       # ID do grupo de segurança existente
   }
+
 
   tags = var.tags
 

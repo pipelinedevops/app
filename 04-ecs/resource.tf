@@ -1,4 +1,47 @@
 
+  resource "aws_security_group" "vpc_acesso" {
+  name   = "vpc_acesso"
+  vpc_id =  data.aws_vpc.selected.id 
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks =  [data.aws_vpc.selected.cidr_block] #[data.aws_vpc.vpc.cidr_block]  #["0.0.0.0/0"]
+  }
+   egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [data.aws_vpc.selected.cidr_block] # [data.aws_vpc.vpc.cidr_block] 
+  }
+  tags = var.tags
+}
+
+
+##securanca public
+  resource "aws_security_group" "acesso_service" {
+  name   = "acesso_services"
+  vpc_id =  data.aws_vpc.selected.id 
+
+  # access from the VPC
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks =  [data.aws_vpc.selected.cidr_block] #["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks =  [data.aws_vpc.selected.cidr_block] #["0.0.0.0/0"]
+  }
+  tags = var.tags
+}
+
+
 
 resource "aws_cloudwatch_log_group" "example" {
   name = var.cluster_name
