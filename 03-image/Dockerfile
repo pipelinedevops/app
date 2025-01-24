@@ -1,14 +1,19 @@
 FROM node:22-alpine
-COPY . /app
+USER root
+COPY . / app /
+COPY package*.json ./
 WORKDIR /app/src
-EXPOSE 8080
+RUN mkdir -p node_modules && chown -R node:node /app/src
 RUN apk add curl
-RUN npm install express
-RUN npm install --save-dev @types/express
-RUN npm install ts-node typescript --save-dev
-RUN npm install --save-dev ts-node
-RUN npm init -y
-RUN npx tsc --init
+RUN npm install \
+    npm install express \
+    npm install --save-dev @types/express \
+    npm install --save-dev ts-node \
+    npm install ts-node typescript --save-dev \
+    npm init -y
+COPY --chown=node:node . .
+USER node
+EXPOSE 9090
 CMD ["npm", "start"]
 
 

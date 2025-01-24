@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 
 const app = express();
-const port = 8080;
+const port = 9090;
 
 // Middleware para JSON
 app.use(express.json());

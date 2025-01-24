@@ -8,8 +8,9 @@ docker tag app:v0.1 app
 
 docker run  app:v0.1 app
 
-docker run -p 3080:8080 app:v0.1
+docker run -p 8080:8080 app:v0.1
 
 docker tag app:v0.1 $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/labchallenge:v0.1
 
 docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/labchallenge:v0.1
+
