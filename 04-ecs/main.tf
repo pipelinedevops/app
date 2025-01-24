@@ -30,7 +30,7 @@ resource "aws_ecs_service" "example" {
   desired_count   = 2
   launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
   #availability_zone_rebalancing  = ENABLED
-  deployment_maximum_percent = 50
+  deployment_maximum_percent = 100
   deployment_minimum_healthy_percent = 50
 
   network_configuration {
