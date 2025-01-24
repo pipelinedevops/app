@@ -33,8 +33,8 @@ resource "aws_ecs_service" "example" {
   network_configuration {
     subnets         = ["${data.aws_subnets.endpoint-us-east-1a.ids[0]}", "${data.aws_subnets.endpoint-us-east-1b.ids[0]}", "${data.aws_subnets.endpoint-us-east-1c.ids[0]}"] # IDs das sub-redes existentes
     security_groups = [
-      aws_security_group.vpc_acesso,
-      aws_security_group.acesso_service
+      aws_security_group.vpc_acesso.id,
+      aws_security_group.acesso_service.id
     ]                       # ID do grupo de segurança existente
   }
 
