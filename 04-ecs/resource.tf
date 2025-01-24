@@ -70,6 +70,10 @@ resource "aws_cloudwatch_log_group" "example" {
   name = var.cluster_name
 }
 
+resource "aws_cloudwatch_log_group" "container" {
+  name = "${var.cluster_name}-container"
+}
+
 
 # Definir uma função de IAM para o ECS
 resource "aws_iam_role" "ecs_task_execution" {
