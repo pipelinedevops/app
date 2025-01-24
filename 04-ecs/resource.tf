@@ -1,4 +1,27 @@
 
+#modelo nat gw
+resource "aws_nat_gateway" "us-east-1a" {
+  connectivity_type = "private"
+  subnet_id         = data.aws_subnets.endpoint-us-east-1a.ids[0]
+  #secondary_private_ip_address_count = 1
+  tags = var.tags
+}
+
+resource "aws_nat_gateway" "us-east-1b" {
+  connectivity_type = "private"
+  subnet_id         = data.aws_subnets.endpoint-us-east-1b.ids[0]
+  #secondary_private_ip_address_count = 1
+  tags = var.tags
+}
+
+resource "aws_nat_gateway" "us-east-1c" {
+  connectivity_type = "private"
+  subnet_id         = data.aws_subnets.endpoint-us-east-1c.ids[0]
+  #secondary_private_ip_address_count = 1
+  tags = var.tags
+}
+
+
   resource "aws_security_group" "vpc_acesso" {
   name   = "vpc_acesso"
   vpc_id =  data.aws_vpc.selected.id 
