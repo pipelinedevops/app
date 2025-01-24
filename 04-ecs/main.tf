@@ -30,8 +30,8 @@ resource "aws_ecs_service" "example" {
   desired_count   = 2
   launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
   #availability_zone_rebalancing  = ENABLED
-  deployment_maximum_percent = "50"
-  deployment_minimum_healthy_percent = "50"
+  deployment_maximum_percent = 50
+  deployment_minimum_healthy_percent = 50
 
   network_configuration {
     subnets         = ["${data.aws_subnets.endpoint-us-east-1a.ids[0]}", "${data.aws_subnets.endpoint-us-east-1b.ids[0]}", "${data.aws_subnets.endpoint-us-east-1c.ids[0]}"] # IDs das sub-redes existentes
