@@ -30,8 +30,11 @@ resource "aws_ecs_service" "example" {
   desired_count   = 2
   launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
   #availability_zone_rebalancing  = ENABLED
-  deployment_maximum_percent = 100
+  deployment_maximum_percent = 100 #minimo 100
   deployment_minimum_healthy_percent = 50
+
+  enable_ecs_managed_tags = true
+  propagate_tags          = "SERVICE"
 
   network_configuration {
     subnets         = ["${data.aws_subnets.endpoint-us-east-1a.ids[0]}", "${data.aws_subnets.endpoint-us-east-1b.ids[0]}", "${data.aws_subnets.endpoint-us-east-1c.ids[0]}"] # IDs das sub-redes existentes
@@ -76,12 +79,14 @@ resource "aws_ecs_task_definition" "example" {
           protocol      = "tcp"
         }
       ]
+      /*
        mountPoints = [
         {
           sourceVolume  = "volume"
           containerPath = "/usr/share/nginx/html"
         }
       ],
+      */
     }
   ])
 
