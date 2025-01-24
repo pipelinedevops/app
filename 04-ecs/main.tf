@@ -29,6 +29,8 @@ resource "aws_ecs_service" "example" {
   task_definition = aws_ecs_task_definition.example.arn
   desired_count   = 2
   launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
+  availability_zone_rebalancing  = ENABLED
+  deployment_maximum_percent = "50"
 
   network_configuration {
     subnets         = ["${data.aws_subnets.endpoint-us-east-1a.ids[0]}", "${data.aws_subnets.endpoint-us-east-1b.ids[0]}", "${data.aws_subnets.endpoint-us-east-1c.ids[0]}"] # IDs das sub-redes existentes
@@ -42,7 +44,10 @@ resource "aws_ecs_service" "example" {
   tags = var.tags
 
     depends_on = [
-    aws_ecs_cluster.example
+    aws_ecs_cluster.example,
+    aws_security_group.acesso_service,
+    aws_security_group.acesso_service
+
   ]
 }
 
