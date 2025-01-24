@@ -28,7 +28,7 @@ resource "aws_ecs_service" "example" {
   cluster         = aws_ecs_cluster.example.id
   task_definition = aws_ecs_task_definition.example.arn
   desired_count   = 2
-  launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
+  launch_type     = "EC2" #"FARGATE" #"FARGATE" "EC2" "EXTERNAL"
   #availability_zone_rebalancing  = ENABLED
   deployment_maximum_percent = 100 #minimo 100
   deployment_minimum_healthy_percent = 50
@@ -42,7 +42,7 @@ resource "aws_ecs_service" "example" {
       aws_security_group.vpc_acesso.id,
       aws_security_group.acesso_service.id
     ]                       # ID do grupo de segurança existente
-     assign_public_ip = true                # Auto-atribui IP público para a tarefa
+   assign_public_ip = true                # Auto-atribui IP público para a tarefa
   }
 
 
