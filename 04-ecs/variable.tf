@@ -23,6 +23,11 @@ variable "reponame" {
    #default  = "v" #"labchallenge"
  }
 
+variable "imagename" {
+   type = string
+   description = "Nome tag"
+   #default  = "v" #"labchallenge"
+ }
  variable "tags" {
   type        = map(any)
   description = "tags"

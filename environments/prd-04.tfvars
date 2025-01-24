@@ -6,6 +6,8 @@ reponame = "labchallenge"
 
 imagetag = "v0.2"
 
+imagename = "app"
+
 ecs_servicename = "ecs_app"
 
 

@@ -28,8 +28,8 @@ resource "aws_ecs_service" "example" {
   name            = var.ecs_servicename #"example-service"
   cluster         = aws_ecs_cluster.example.id
   task_definition = aws_ecs_task_definition.example.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  desired_count   = 2
+  launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
 
   network_configuration {
     subnets         = ["subnet-12345678", "subnet-87654321"] # IDs das sub-redes existentes
@@ -46,7 +46,7 @@ resource "aws_ecs_service" "example" {
 
 # Configurar uma definição de tarefa ECS
 resource "aws_ecs_task_definition" "example" {
-  family                   = "example-task"
+  family                   = var.imagename #"example-task"
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   requires_compatibilities = ["FARGATE"]
@@ -55,15 +55,15 @@ resource "aws_ecs_task_definition" "example" {
 
   container_definitions = jsonencode([
     {
-      name      = "nginx"
-      image     = "nginx:latest"
+      name      = "applab" #"nginx"
+      image     = "${var.imagename}:latest" #"nginx:latest"
       cpu       = 256
       memory    = 512
       essential = true
       portMappings = [
         {
-          containerPort = 8080
-          hostPort      = 8080
+          containerPort = 9090
+          hostPort      = 9090
           protocol      = "tcp"
         }
       ]
