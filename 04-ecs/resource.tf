@@ -1,4 +1,6 @@
 
+
+/*
 #modelo nat gw
 resource "aws_nat_gateway" "us-east-1a" {
   connectivity_type = "private"
@@ -20,7 +22,7 @@ resource "aws_nat_gateway" "us-east-1c" {
   #secondary_private_ip_address_count = 1
   tags = var.tags
 }
-
+*/
 
   resource "aws_security_group" "vpc_acesso" {
   name   = "vpc_acesso"

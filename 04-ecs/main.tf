@@ -42,6 +42,7 @@ resource "aws_ecs_service" "example" {
       aws_security_group.vpc_acesso.id,
       aws_security_group.acesso_service.id
     ]                       # ID do grupo de segurança existente
+     assign_public_ip = true                # Auto-atribui IP público para a tarefa
   }
 
 
