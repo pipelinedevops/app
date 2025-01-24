@@ -29,7 +29,7 @@ resource "aws_ecs_service" "example" {
   task_definition = aws_ecs_task_definition.example.arn
   desired_count   = 2
   launch_type     = "FARGATE" #"FARGATE" "EC2" "EXTERNAL"
-  availability_zone_rebalancing  = ENABLED
+  #availability_zone_rebalancing  = ENABLED
   deployment_maximum_percent = "50"
   deployment_minimum_healthy_percent = "50"
 
