@@ -76,6 +76,12 @@ resource "aws_ecs_task_definition" "example" {
           protocol      = "tcp"
         }
       ]
+       mountPoints = [
+        {
+          sourceVolume  = "volume"
+          containerPath = "/usr/share/nginx/html"
+        }
+      ],
     }
   ])
 
