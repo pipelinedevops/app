@@ -1,83 +1,36 @@
+ resource "aws_ecs_cluster_capacity_providers" "example" {
+  cluster_name = aws_ecs_cluster.example.name
 
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 
-/*
-#modelo nat gw
-resource "aws_nat_gateway" "us-east-1a" {
-  connectivity_type = "private"
-  subnet_id         = data.aws_subnets.endpoint-us-east-1a.ids[0]
-  #secondary_private_ip_address_count = 1
-  tags = var.tags
-}
-
-resource "aws_nat_gateway" "us-east-1b" {
-  connectivity_type = "private"
-  subnet_id         = data.aws_subnets.endpoint-us-east-1b.ids[0]
-  #secondary_private_ip_address_count = 1
-  tags = var.tags
-}
-
-resource "aws_nat_gateway" "us-east-1c" {
-  connectivity_type = "private"
-  subnet_id         = data.aws_subnets.endpoint-us-east-1c.ids[0]
-  #secondary_private_ip_address_count = 1
-  tags = var.tags
-}
-*/
-
-  resource "aws_security_group" "vpc_acesso" {
-  name   = "vpc_acesso"
-  vpc_id =  data.aws_vpc.selected.id 
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks =  [data.aws_vpc.selected.cidr_block] #[data.aws_vpc.vpc.cidr_block]  #["0.0.0.0/0"]
+  default_capacity_provider_strategy {
+    base              = 1
+    weight            = 10
+    capacity_provider = "FARGATE"
   }
-   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.selected.cidr_block] # [data.aws_vpc.vpc.cidr_block] 
-  }
-  tags = var.tags
 }
-
-
-##securanca public
-  resource "aws_security_group" "acesso_service" {
-  name   = "acesso_services"
-  vpc_id =  data.aws_vpc.selected.id 
-
-  # access from the VPC
-  ingress {
-    from_port   = 9090
-    to_port     = 9090
-    protocol    = "tcp"
-    cidr_blocks =  [data.aws_vpc.selected.cidr_block] #["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks =  [data.aws_vpc.selected.cidr_block] #["0.0.0.0/0"]
-  }
-  tags = var.tags
-}
-
-
+ 
+################################################
 
 resource "aws_cloudwatch_log_group" "example" {
   name = var.cluster_name
+
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_log_group" "container" {
   name = "${var.cluster_name}-container"
+
+  tags = var.tags
 }
 
 
+####################################################
+####################################################
+#iam to ecs cluster/task
+
 # Definir uma função de IAM para o ECS
+
 resource "aws_iam_role" "ecs_task_execution" {
   name = "ecsTaskExecutionRole"
 
@@ -91,18 +44,88 @@ resource "aws_iam_role" "ecs_task_execution" {
       }
     ]
   })
+  tags = var.tags 
 }
 
 # Anexar políticas à função IAM
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   role       = aws_iam_role.ecs_task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+}
+
+resource "aws_iam_role_policy_attachment" "CloudWatchLogs_policy" {
+  role       = aws_iam_role.ecs_task_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+
+}
+
+resource "aws_iam_role_policy_attachment" "cloud_map_ecs" {
+  role       = aws_iam_role.ecs_task_execution.name
+  policy_arn = aws_iam_policy.cloud_map_policy.arn
+
 }
 
 
+
+resource "aws_iam_role_policy_attachment" "ecr_policy" {
+  role       = aws_iam_role.ecs_task_execution.name
+  policy_arn = aws_iam_policy.ecr_policy.arn
+
+}
+
+
+
+resource "aws_iam_policy" "cloud_map_policy" {
+  name        = "CloudMapAccessPolicy"
+  description = "Permissões para descoberta de serviços no Cloud Map"
+  policy      = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "servicediscovery:DiscoverInstances",
+          "servicediscovery:GetNamespace",
+          "servicediscovery:ListNamespaces",
+          "servicediscovery:CreateService",
+          "servicediscovery:RegisterInstance"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+  tags = var.tags 
+}
+
+resource "aws_iam_policy" "ecr_policy" {
+  name        = "ecrAccessPolicy"
+  description = "Permissões para o ecs usar o ecr"
+  policy      = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        }
+    ]
+})
+  tags = var.tags 
+}
+
+####################################################
+####################################################
 resource "aws_kms_key" "example" {
   description             = "example"
   deletion_window_in_days = 7
+
+  tags = var.tags
 }
 
 resource "aws_kms_key_policy" "example" {
@@ -170,3 +193,15 @@ resource "aws_kms_key_policy" "example" {
     Version = "2012-10-17"
   })
 }
+
+
+
+ /*
+resource "aws_service_discovery_private_dns_namespace" "example" {
+  name        = var.ecs_servicename #"service-app"    # Nome do namespace
+  description = "Namespace para ECS Service Connect"
+  vpc         = data.aws_vpc.selected.id  #"vpc-xxxxxxxx"  # ID da VPC onde o namespace será usado
+
+  tags = var.tags
+}
+*/
