@@ -54,6 +54,7 @@ jobs:
 
   deployecs:
      name: 04-ecs
+     needs: configpipeline
      runs-on: ubuntu-latest
      env:
         ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || '../environments/prd-04.tfvars' }} ##editar o caminho conforme necessário
