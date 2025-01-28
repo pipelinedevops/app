@@ -1,7 +1,7 @@
 
 name: Deploy ECR image
 
-#on:
+on:
 #  push:
 #    branches: [ "main" ]
     
