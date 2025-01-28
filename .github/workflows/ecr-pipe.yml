@@ -55,6 +55,7 @@ jobs:
   deployrepo:
      name: 02-repo
      runs-on: ubuntu-latest
+     needs: configpipeline
      env:
         ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || '../environments/prd-02.tfvars' }} ##editar o caminho conforme necessário
         BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || '../environments/blackend-prd-02.tfvars' }} #editar o caminho conforme necessário
