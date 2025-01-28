@@ -1,5 +1,5 @@
 
-name: Deploy to Amazon ECR image
+name: Deploy ECR image
 
 on:
   push:
@@ -59,7 +59,6 @@ jobs:
         ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || '../environments/prd-02.tfvars' }} ##editar o caminho conforme necessário
         BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || '../environments/blackend-prd-02.tfvars' }} #editar o caminho conforme necessário
         AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }}
-     needs: deploystate
      environment: production
      steps:
        - name: Checkout
