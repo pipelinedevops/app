@@ -1,9 +1,9 @@
 
 name: Deploy infra
 
-on:
-  push:
-    branches: [ "main" ]
+#on:
+#  push:
+#    branches: [ "main" ]
     
 env:
   AWS_ACCESS_KEY_ID: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stg' && secrets.AWS_ACCESS_KEY_STG) || secrets.TF_AWS_LAB_ID }}
