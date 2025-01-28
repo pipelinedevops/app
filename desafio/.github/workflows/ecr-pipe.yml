@@ -1,9 +1,9 @@
 
 name: Deploy to Amazon ECR image
 
-#on:
-#  push:
-#    branches: [ "main" ]
+on:
+  push:
+    branches: [ "main" ]
     
 env:
   AWS_ACCESS_KEY_ID: ${{ (github.ref == 'refs/heads/development' && secrets.AWS_ACCESS_KEY_DEV) || (github.ref == 'refs/heads/stg' && secrets.AWS_ACCESS_KEY_STG) || secrets.TF_AWS_LAB_ID }}
@@ -51,31 +51,6 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-
-  deploystate:
-      name: 01-state
-      runs-on: ubuntu-latest
-      env:
-        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' ||  '../environments/prd-01.tfvars'  }} #editar o caminho conforme necessário
-        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || '../environments/blackend-prd-01.tfvars' }}  #editar o caminho conforme necessário
-        AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }} 
-      needs: configpipeline
-      environment: production
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4 
-        
-        - name: SetupTerraform
-          uses: hashicorp/setup-terraform@v3  
-
-        - name: deploy state
-          run: | 
-           terraform init -reconfigure -backend-config="${{ env.BACKEND_CONFIG }}"
-           terraform plan -lock=false  -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}" 
-           terraform apply -auto-approve -lock=false -parallelism=10 -var-file="${{ env.ENVIRONMENT_TFVARS }}"
-
-          working-directory:  ${{ env.directory-01 }}   
-
               
   deployrepo:
      name: 02-repo
@@ -135,30 +110,4 @@ jobs:
              aws ecr describe-images --repository-name ${{ env.repo_name }}
                  
          shell: /usr/bin/bash -e {0}
-         working-directory:  ${{ env.directory-03}}  
-    
-  deployecs:
-     name: 04-ecs
-     runs-on: ubuntu-latest
-     needs: deployimage
-     env:
-        ENVIRONMENT_TFVARS: ${{ (github.ref == 'refs/heads/development') && 'environments/dev.tfvars' || (github.ref == 'refs/heads/stg') && 'environments/stg.tfvars' || '../environments/prd-04.tfvars' }} ##editar o caminho conforme necessário
-        BACKEND_CONFIG: ${{ (github.ref == 'refs/heads/development') && 'environments/backend-dev.tf' || (github.ref == 'refs/heads/stg') && 'environments/backend-stg.tf' || '../environments/blackend-prd-04.tfvars' }} #editar o caminho conforme necessário
-        AWS_DEFAULT_REGION: ${{ (github.ref == 'refs/heads/development') && 'us-east-1' || (github.ref == 'refs/heads/stg') && 'us-east-1' || 'us-east-1' }}
-     environment: production
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v4 
-       
-       - name: SetupTerraform
-         uses: hashicorp/setup-terraform@v3  
-
-       - name: deployrepo
-         run: |      
-          terraform init -reconfigure -backend-config="${{ env.BACKEND_CONFIG }}"
-          terraform plan -lock=false -parallelism=10 -out=plan.out -var-file="${{ env.ENVIRONMENT_TFVARS }}"
-          terraform apply -auto-approve -lock=false -parallelism=10  -var-file="${{ env.ENVIRONMENT_TFVARS }}"
-
-         working-directory:  ${{ env.directory-04 }} 
-        
-     
+         working-directory:  ${{ env.directory-03}} 

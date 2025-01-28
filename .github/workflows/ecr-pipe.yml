@@ -104,6 +104,8 @@ jobs:
              docker tag ${{env.image_name}}:${{env.tag_name}} $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
      
              docker push $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
+
+             docker pull $AWS_ACCOUNT_ID.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.repo_name }}:${{env.tag_name}}
      
              aws ecr describe-images --repository-name ${{ env.repo_name }}
                  
