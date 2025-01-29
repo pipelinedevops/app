@@ -31,7 +31,23 @@ tag_name: v0.2  #tag name
 
 8- executar as intruções conforme o topico no arquivo readme  #primeiro deploy
 
-9- 
+
+9- ajustar o blackends definidos nos arquivos"/environments/blackend-prd-xxx.tfvars" que foi criado no passo parte2/01-tfstate
+
+10- ajustar os arquivos /environments/prd-xx.tfvars conforme comentado em cada um dos arquivos
+
+11 - fazer push para executar as pipelines (na primeira execução)
+
+obs: a primeira exeução apenas o repositorio vai ser criado com seus requisitos, na segunda os recursos do ecs devem  ser criados com sucesso
+
+Solução:
+
+
+-Por escolha de arquitetura / custo foi criado um ambiente usando subnet publica e fargate para não usar nat/vpc endpoint oque tornaria mais caro criar/manter o ambiente
+
+-Foi escrito um ambiente iac pensando em um padrão de organização. mas, é possivel usar em outros tipos de ambiente
+
+-Para monitoramento foi usado cloudwach habilitado junto ao ecs para os containers e logs
 
 
 terraform init -reconfigure -backend-config=../environments/blackend-prd-01.tfvars

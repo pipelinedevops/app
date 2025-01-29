@@ -1,6 +1,6 @@
 #nome do repositorio
 
-cluster_name =  "lab-ecs"
+cluster_name =  "labecs"
 
 reponame = "labchallenge"
 
@@ -9,6 +9,12 @@ imagetag = "v0.2"
 imagename = "app"
 
 ecs_servicename = "ecs_app"
+
+#define o numero maximo de taks do ecs 
+task_number_max = "6"
+
+#define o numeto minimo
+task_number_min = "1"
 
 ##
 #usar em caso de existir varias vpcs no ambiente
